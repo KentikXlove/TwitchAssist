@@ -1,0 +1,30 @@
+{
+  "latest": {
+    "version": "1.0.0",
+    "executable": "TwitchAssist-1.0.0.exe",
+    "id": "1r4OebtoerNsjQEA1m15asoAc1L5iVTbP",
+    "source_url": "https://cdn.jsdelivr.net/gh/KentikXlove/TwitchAssist@main/versions/ChatTwitch-1.0.0",
+    "release_date": "2026-08-03",
+    "size": 140000,
+    "changelog": [
+      "Первый релиз TwitchAssist"
+    ],
+    "is_beta": false,
+    "is_stable": true
+  },
+  "versions": [
+    {
+      "version": "1.0.0",
+      "executable": "TwitchAssist-1.0.0.exe",
+      "id": "1r4OebtoerNsjQEA1m15asoAc1L5iVTbP",
+      "source_url": "https://cdn.jsdelivr.net/gh/KentikXlove/TwitchAssist@main/versions/ChatTwitch-1.0.0",
+      "release_date": "2026-08-03",
+      "size": 140000,
+      "changelog": [
+        "Первый релиз TwitchAssist"
+      ],
+      "is_beta": false,
+      "is_stable": true
+    }
+  ]
+}
