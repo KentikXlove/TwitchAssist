@@ -1,0 +1,2 @@
+class TTSException(Exception):
+    pass

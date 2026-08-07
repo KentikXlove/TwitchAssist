@@ -1,0 +1,68 @@
+{
+    "project_name": "ChatTwitch",
+    "main_script": "main.py",
+    "output_dir": "dist",
+    "build_mode": "onefile",
+    "console": true,
+    "clean_build": true,
+    "additional_files": [
+        {
+            "source": "../packages",
+            "destination": "packages",
+            "type": "directory"
+        },
+        {
+            "source": "templates",
+            "destination": "templates",
+            "type": "directory"
+        },
+        {
+            "source": "static",
+            "destination": "static",
+            "type": "directory"
+        },
+        {
+            "source": "styles",
+            "destination": "styles",
+            "type": "directory"
+        },
+        {
+            "source": "app.py",
+            "destination": ".",
+            "type": "file"
+        },
+        {
+            "source": "main.py",
+            "destination": ".",
+            "type": "file"
+        }
+    ],
+    "additional_binary_files": [],
+    "hidden_imports": [
+        "engineio.async_drivers.threading",
+        "socketio.async_drivers.threading",
+        "pyttsx3",
+        "edge_tts",
+        "pygame",
+        "qrcode",
+        "PIL",
+        "PyQt5",
+        "PyQt5.QtCore",
+        "PyQt5.QtWidgets",
+        "PyQt5.QtGui",
+        "PyQt5.QtNetwork",
+        "PyQt5.QtWebEngineWidgets",
+        "PyQt5.QtWebEngineCore",
+        "PyQtWebEngine",
+        "playsound",
+        "flask",
+        "flask_socketio"
+    ],
+    "exclude_modules": [],
+    "icon": "icon.ico",
+    "version_file": null,
+    "upx": false,
+    "runtime_hooks": [],
+    "pathex": [],
+    "datas": []
+}

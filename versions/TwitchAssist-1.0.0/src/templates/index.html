@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TwitchAssist</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <header class="sticky-header">
+        <div class="header-container">
+            <div class="logo">Twitch<span>Assist</span></div>
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="main"><i class="fas fa-home"></i> Главная</button>
+                <button class="tab-btn" data-tab="settings"><i class="fas fa-gear"></i> Настройки</button>
+                <button class="tab-btn" data-tab="tts"><i class="fas fa-volume-up"></i> TTS</button>
+                <button class="tab-btn" data-tab="overlays"><i class="fas fa-layer-group"></i> Оверлеи</button>
+                <button class="tab-btn" data-tab="charts"><i class="fas fa-chart-line"></i> Графики</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Главная -->
+        <div id="tab-main" class="tab-content active">
+            <div class="main-grid">
+                <div class="column">
+                    <!-- Карточка канала -->
+                    <div class="card">
+                        <div class="card-title">Информация о канале</div>
+                        <div class="channel-grid">
+                            <div class="avatar-block">
+                                <img id="avatarImg" src="" alt="аватар" />
+                                <div class="status-block">
+                                    <span class="status-dot" id="statusDot"></span>
+                                    <span id="statusText" style="color: #adadb8;"></span>
+                                    <span class="uptime" id="uptime">—</span>
+                                </div>
+                            </div>
+                            <div class="channel-info">
+                                <div class="info-row">
+                                    <span class="info-label">Канал</span>
+                                    <span class="info-value name" id="channelName">—</span>
+                                    <span class="info-value game" id="game">—</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Зрители</span>
+                                    <span class="info-value viewers" id="viewers">0</span>
+                                    <span style="min-width:40px;"></span>
+                                    <span class="info-label">Follow</span>
+                                    <span class="info-value followers" id="followers">
+                                        0 <span class="diff" id="followersDiff"></span>
+                                    </span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Название</span>
+                                    <span class="info-value title" id="title">—</span>
+                                </div>
+                                <!-- Новая кнопка для ручного уведомления -->
+                                <div class="info-row" style="margin-top:12px;">
+                                    <button id="sendNotificationBtn" class="btn-primary" style="width:100%;">
+                                        <i class="fas fa-paper-plane"></i> Оповестить о стриме
+                                    </button>
+                                    <span id="notificationStatus" class="settings-status" style="margin-left:10px;"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- График -->
+                    <div class="card chart-card">
+                        <div class="card-title">График зрителей</div>
+                        <div class="chart-container">
+                            <canvas id="viewersChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="column">
+                    <!-- Чат -->
+                    <div class="card" style="flex:1;">
+                        <div class="chat-header">
+                            <div class="card-title">Чат</div>
+                            <div style="display: flex; align-items: center;">
+                                <button class="btn-outline" id="openChatWindowBtn">
+                                    <i class="fas fa-external-link-alt"></i> Открыть в окне
+                                </button>
+                            </div>
+                        </div>
+                        <div id="chat-box">
+                            <div class="empty-chat">Сообщения появятся здесь...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Настройки -->
+        <div id="tab-settings" class="tab-content">
+            <div class="card settings-main">
+                <div class="card-title">Настройки приложения</div>
+                <!-- Горизонтальные табы -->
+                <div class="settings-tabs">
+                    <button class="settings-tab active" data-category="general">Основные</button>
+                    <button class="settings-tab" data-category="appearance">Внешний вид</button>
+                    <button class="settings-tab" data-category="filters">Фильтры</button>
+                    <button class="settings-tab" data-category="logs">Логи</button>
+                    <button class="settings-tab" data-category="intervals">Интервалы</button>
+                    <button class="settings-tab" data-category="telegram">Telegram</button>
+                </div>
+                <div class="settings-content">
+                    <!-- Категория: Основные -->
+                    <div class="settings-category active" id="category-general">
+                        <div class="setting-card">
+                            <h4>Основной канал</h4>
+                            <div class="settings-group">
+                                <label for="channelInput">Имя канала</label>
+                                <input type="text" id="channelInput" placeholder="введите ник" value="{{ channel }}" />
+                                <button id="saveChannelBtn">Сохранить</button>
+                                <span id="statusMsg" class="settings-status"></span>
+                            </div>
+                        </div>
+                        <div class="setting-card">
+                            <h4>Окно</h4>
+                            <div class="settings-group">
+                                <label for="alwaysOnTop">Всегда поверх</label>
+                                <label class="toggle">
+                                    <input type="checkbox" id="alwaysOnTop" class="auto-save" />
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <span class="help-text">Главное окно всегда будет поверх других</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Категория: Внешний вид -->
+                    <div class="settings-category" id="category-appearance">
+                        <div class="setting-card">
+                            <h4>Внешний вид чат-оверлея</h4>
+                            <div class="settings-group">
+                                <label for="overlayStyle">Стиль</label>
+                                <select id="overlayStyle" class="auto-save"></select>
+                                <span class="help-text">Выберите стиль из папки styles</span>
+                            </div>
+                            <div class="settings-group">
+                                <label for="customCSS">Пользовательский CSS</label>
+                                <textarea id="customCSS" class="auto-save" placeholder="Введите свой CSS..."></textarea>
+                                <span class="help-text">Действует при выборе "Пользовательский CSS"</span>
+                            </div>
+                            <div class="settings-group">
+                                <label for="showAvatar">Показывать аватар</label>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="showAvatar" class="auto-save" checked />
+                                    <span class="help-text">Отображать иконку пользователя в оверлее</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Категория: Фильтры -->
+                    <div class="settings-category" id="category-filters">
+                        <div class="setting-card">
+                            <h4>Фильтр плохих слов</h4>
+                            <div class="settings-group">
+                                <label for="badWords">Список слов (через запятую)</label>
+                                <textarea id="badWords" class="auto-save" placeholder="word1, word2, ..."></textarea>
+                                <span class="help-text">Слова будут заменены на звёздочки</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Категория: Логи -->
+                    <div class="settings-category" id="category-logs">
+                        <div class="setting-card">
+                            <h4>Логирование сообщений</h4>
+                            <div class="settings-group">
+                                <label for="logEnabled">Включить логи</label>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="logEnabled" class="auto-save" checked />
+                                    <span class="help-text">Сохранять все сообщения в файл</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Категория: Интервалы -->
+                    <div class="settings-category" id="category-intervals">
+                        <div class="setting-card">
+                            <h4>Интервалы обновления</h4>
+                            <div class="settings-group">
+                                <label for="channelUpdateInterval">Обновление канала (сек)</label>
+                                <input type="number" id="channelUpdateInterval" class="auto-save" value="60" min="5" max="3600" />
+                            </div>
+                            <div class="settings-group">
+                                <label for="chartInterval">Сбор данных для графика (сек)</label>
+                                <input type="number" id="chartInterval" class="auto-save" value="300" min="10" max="3600" />
+                            </div>
+                            <div class="settings-group">
+                                <label for="messageTTL">Время жизни сообщений в оверлее (сек)</label>
+                                <input type="number" id="messageTTL" class="auto-save" value="0" min="0" max="3600" />
+                                <span class="help-text">0 — сообщения не удаляются</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Категория: Telegram -->
+                    <div class="settings-category" id="category-telegram">
+                        <div class="setting-card">
+                            <h4>Уведомления о начале стрима</h4>
+                            <div class="settings-group">
+                                <label for="telegramNotifyEnabled">Включить уведомления</label>
+                                <label class="toggle">
+                                    <input type="checkbox" id="telegramNotifyEnabled" class="auto-save" />
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <span class="help-text">Отправлять сообщение при старте стрима</span>
+                            </div>
+                            <div class="settings-group">
+                                <label for="telegramBotToken">Токен бота</label>
+                                <input type="text" id="telegramBotToken" class="auto-save" placeholder="123456:ABC-DEF..." />
+                                <span class="help-text">Получить у @BotFather</span>
+                            </div>
+                            <div class="settings-group">
+                                <label for="telegramChatId">ID чата</label>
+                                <input type="text" id="telegramChatId" class="auto-save" placeholder="-1001234567890" />
+                                <span class="help-text">ID пользователя или группы</span>
+                            </div>
+                            <div class="settings-group">
+                                <label for="proxyUrl">Прокси (опционально)</label>
+                                <input type="text" id="proxyUrl" class="auto-save" placeholder="http://user:pass@host:port" />
+                                <button id="testProxyBtn" class="btn-outline btn-sm" style="margin-left: 10px;">Проверить прокси</button>
+                                <span id="proxyTestStatus" class="settings-status" style="margin-left: 10px;"></span>
+                                <span class="help-text">HTTP/HTTPS или SOCKS (требуется requests[socks])</span>
+                            </div>
+                            <!-- НОВОЕ ПОЛЕ: шаблон уведомления -->
+                            <div class="settings-group">
+                                <label for="telegramTemplate">Шаблон уведомления</label>
+                                <textarea id="telegramTemplate" class="auto-save" rows="4" placeholder="🔴 <b>{channel}</b> начал стрим!&#10;📺 <a href=&quot;{url}&quot;>{title}</a>&#10;🎮 {game}&#10;👁 {viewers} зрителей"></textarea>
+                                <span class="help-text">Доступны переменные: {channel}, {title}, {game}, {viewers}, {url}</span>
+                            </div>
+                            <div class="settings-group">
+                                <button id="testTelegramBtn" class="btn-outline btn-sm">Тестовое сообщение</button>
+                                <span id="telegramTestStatus" class="settings-status"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TTS -->
+        <div id="tab-tts" class="tab-content">
+            <div class="card tts-main">
+                <div class="card-title">Настройки TTS (озвучивание чата)</div>
+
+                <div class="setting-card">
+                    <h4>Основные</h4>
+                    <div class="settings-group">
+                        <label for="ttsEnabled">Включить TTS</label>
+                        <label class="toggle">
+                            <input type="checkbox" id="ttsEnabled" class="auto-save" />
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="settings-group">
+                        <label for="ttsMode">Режим</label>
+                        <select id="ttsMode" class="auto-save">
+                            <option value="all_except">Озвучивать всех, кроме</option>
+                            <option value="only">Озвучивать только</option>
+                        </select>
+                    </div>
+                    <div class="settings-group">
+                        <label for="ttsUsers">Никнеймы (через запятую)</label>
+                        <input type="text" id="ttsUsers" class="auto-save" placeholder="user1, user2, ..." />
+                    </div>
+                </div>
+
+                <div class="setting-card">
+                    <h4>Голос и скорость</h4>
+                    <div class="settings-group">
+                        <label for="ttsEngine">Движок</label>
+                        <select id="ttsEngine" class="auto-save">
+                            <option value="pyttsx3">pyttsx3 (локальный)</option>
+                            <option value="edge">Edge (облачный)</option>
+                        </select>
+                    </div>
+                    <div class="settings-group">
+                        <label for="ttsVoice">Голос</label>
+                        <select id="ttsVoice" class="auto-save"></select>
+                    </div>
+                    <div class="settings-group">
+                        <label for="ttsSpeed">Скорость (слов/мин)</label>
+                        <input type="number" id="ttsSpeed" class="auto-save" value="200" min="80" max="300" />
+                    </div>
+                    <div class="settings-group">
+                        <label for="ttsVolume">Громкость (%)</label>
+                        <input type="number" id="ttsVolume" class="auto-save" value="50" min="0" max="100" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Оверлеи -->
+        <div id="tab-overlays" class="tab-content">
+            <div class="card">
+                <div class="card-title">Управление оверлеями</div>
+
+                <div class="overlay-card">
+                    <div class="overlay-header">
+                        <span class="overlay-name">Чат</span>
+                        <label class="toggle">
+                            <input type="checkbox" id="overlayChatEnabled" class="auto-save">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="overlay-desc">Показывать чат на странице <code>/overlay</code></div>
+                </div>
+
+                <div class="overlay-card">
+                    <div class="overlay-header">
+                        <span class="overlay-name">Telegram QR</span>
+                        <label class="toggle">
+                            <input type="checkbox" id="overlayTelegramEnabled" class="auto-save">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="overlay-desc">Показывать QR‑код на странице <code>/overlay/telegram</code></div>
+                    <div class="overlay-settings" id="telegramSettings" style="margin-top:12px; display:none;">
+                        <div class="settings-group">
+                            <label for="telegramUsername">Username</label>
+                            <input type="text" id="telegramUsername" class="auto-save" placeholder="без @">
+                        </div>
+                        <div class="settings-group">
+                            <label for="telegramStyle">Стиль</label>
+                            <select id="telegramStyle" class="auto-save"></select>
+                        </div>
+                        <div class="settings-group">
+                            <label for="telegramCustomCSS">Пользовательский CSS</label>
+                            <textarea id="telegramCustomCSS" class="auto-save" rows="2" placeholder="Введите свой CSS..."></textarea>
+                        </div>
+                        <div class="settings-group">
+                            <button id="previewTelegramQR" class="btn-outline btn-sm">Предпросмотр QR</button>
+                            <span id="qrPreviewContainer" style="margin-left:10px;"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top:20px; color:#adadb8; font-size:14px;">
+                    <i class="fas fa-sync-alt"></i> Изменения применяются мгновенно
+                </div>
+            </div>
+        </div>
+
+        <!-- Графики -->
+        <div id="tab-charts" class="tab-content">
+            <div class="charts-grid">
+                <div class="card">
+                    <div class="card-title">Зрители</div>
+                    <div class="chart-container-full">
+                        <canvas id="viewersChartFull"></canvas>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Follow</div>
+                    <div class="chart-container-full">
+                        <canvas id="followersChartFull"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="contextMenu" style="display:none; position:fixed; background:#18181b; border:1px solid #3a3a42; border-radius:8px; padding:6px 0; min-width:180px; z-index:1000; box-shadow:0 4px 20px rgba(0,0,0,0.8);">
+        <div class="ctx-item" data-action="open-user"><i class="fas fa-user"></i> Открыть сообщения пользователя</div>
+        <div class="ctx-item" data-action="tts-toggle"><i class="fas fa-microphone"></i> Добавить/удалить из TTS</div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+body {
+    background: #0a0a1a;
+    color: #00ffcc;
+    font-family: 'Courier New', monospace;
+    margin: 0;
+    padding: 10px;
+    text-shadow: 0 0 5px #00ffcc;
+}
+#chat-box {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.chat-message {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 6px 0;
+    border-bottom: 1px solid #00ffcc33;
+}
+.chat-time {
+    font-size: 11px;
+    color: #00ffcc88;
+    flex-shrink: 0;
+}
+.chat-username {
+    font-weight: 700;
+    flex-shrink: 0;
+    color: #ff00ff;
+}
+.chat-text {
+    word-break: break-word;
+}
+.emote {
+    display: inline-block;
+    vertical-align: middle;
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 3px #00ffcc);
+}
+.avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    border: 1px solid #00ffcc;
+}
+
+/* ---- Компактный телеграм-оверлей (неон) ---- */
+.telegram-container {
+    text-align: center;
+    background: #111128;
+    padding: 15px 20px;
+    border-radius: 12px;
+    border: 1px solid #00ffcc;
+    box-shadow: 0 0 20px rgba(0,255,204,0.2);
+    text-shadow: 0 0 8px #00ffcc;
+    display: inline-block;
+    margin: 0 auto;
+}
+.telegram-container h2 {
+    margin: 0 0 6px 0;
+    font-size: 18px;
+    color: #ff00ff;
+    text-shadow: 0 0 12px #ff00ff;
+}
+.telegram-container .username {
+    color: #00ffcc;
+    font-size: 15px;
+    margin-top: 4px;
+}
+.telegram-container img {
+    max-width: 200px;
+    height: auto;
+    border-radius: 8px;
+    margin: 8px 0;
+    box-shadow: 0 0 15px rgba(0,255,204,0.4);
+}
+.overlay-disabled {
+    font-size: 20px;
+    color: #00ffcc;
+    text-align: center;
+    margin-top: 20px;
+    text-shadow: 0 0 10px #00ffcc;
+}

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram QR Overlay</title>
+    <style id="dynamic-style">
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #0e0e10;
+            font-family: 'Segoe UI', sans-serif;
+            color: #efeff1;
+        }
+        .telegram-container {
+            text-align: center;
+            background: #18181b;
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid #2a2a2e;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+        }
+        .telegram-container img {
+            max-width: 300px;
+            height: auto;
+            border-radius: 12px;
+            margin: 15px 0;
+        }
+        .telegram-container h2 {
+            margin: 0 0 10px 0;
+            color: #9147ff;
+        }
+        .telegram-container .username {
+            color: #adadb8;
+            font-size: 18px;
+        }
+        .overlay-disabled {
+            font-size: 24px;
+            color: #adadb8;
+        }
+    </style>
+    <!-- Динамический стиль -->
+</head>
+<body>
+    <div id="content">
+        <!-- Заполняется через JS -->
+    </div>
+
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script>
+        const socket = io();
+        const content = document.getElementById('content');
+        let isEnabled = false;
+        let currentData = { username: '', qr_base64: null, style_name: 'dark.css', custom_css: '' };
+
+        function render() {
+            if (!isEnabled) {
+                content.innerHTML = '<div class="overlay-disabled"></div>';
+                return;
+            }
+            if (!currentData.username || !currentData.qr_base64) {
+                content.innerHTML = '<div class="overlay-disabled">Не указан username или ошибка генерации QR</div>';
+                return;
+            }
+            // Применяем стиль
+            const styleEl = document.getElementById('dynamic-style');
+            if (currentData.custom_css) {
+                styleEl.textContent = currentData.custom_css;
+            } else if (currentData.style_name) {
+                fetch(`/api/style?name=${encodeURIComponent(currentData.style_name)}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.content) styleEl.textContent = data.content;
+                    })
+                    .catch(() => {});
+            }
+            content.innerHTML = `
+                <div class="telegram-container">
+                    <h2>Подпишитесь на Telegram</h2>
+                    <img src="data:image/png;base64,${currentData.qr_base64}" alt="QR-код для @${currentData.username}" />
+                    <div class="username">@${currentData.username}</div>
+                </div>
+            `;
+        }
+
+        function loadData() {
+            fetch('/api/config')
+                .then(res => res.json())
+                .then(data => {
+                    const overlays = (data.overlay && data.overlay.overlays) || {};
+                    isEnabled = overlays.telegram_enabled || false;
+                    currentData.username = overlays.telegram_username || '';
+                    currentData.style_name = overlays.telegram_style || 'dark.css';
+                    currentData.custom_css = overlays.telegram_custom_css || '';
+                    // Загружаем QR-код
+                    if (isEnabled && currentData.username) {
+                        fetch(`/api/qr?username=${encodeURIComponent(currentData.username)}`)
+                            .then(res => {
+                                if (res.ok) return res.blob();
+                                throw new Error('QR generation failed');
+                            })
+                            .then(blob => {
+                                const reader = new FileReader();
+                                reader.onload = function() {
+                                    currentData.qr_base64 = reader.result.split(',')[1];
+                                    render();
+                                };
+                                reader.readAsDataURL(blob);
+                            })
+                            .catch(err => {
+                                console.error('QR error:', err);
+                                currentData.qr_base64 = null;
+                                render();
+                            });
+                    } else {
+                        currentData.qr_base64 = null;
+                        render();
+                    }
+                })
+                .catch(console.error);
+        }
+
+        socket.on('connect', () => {
+            console.log('Telegram overlay connected');
+            loadData();
+        });
+
+        socket.on('overlay_settings_updated', (overlays) => {
+            isEnabled = overlays.telegram_enabled || false;
+            currentData.username = overlays.telegram_username || '';
+            currentData.style_name = overlays.telegram_style || 'dark.css';
+            currentData.custom_css = overlays.telegram_custom_css || '';
+            if (isEnabled && currentData.username) {
+                fetch(`/api/qr?username=${encodeURIComponent(currentData.username)}`)
+                    .then(res => {
+                        if (res.ok) return res.blob();
+                        throw new Error('QR generation failed');
+                    })
+                    .then(blob => {
+                        const reader = new FileReader();
+                        reader.onload = function() {
+                            currentData.qr_base64 = reader.result.split(',')[1];
+                            render();
+                        };
+                        reader.readAsDataURL(blob);
+                    })
+                    .catch(err => {
+                        console.error('QR error:', err);
+                        currentData.qr_base64 = null;
+                        render();
+                    });
+            } else {
+                currentData.qr_base64 = null;
+                render();
+            }
+        });
+
+        socket.on('settings_updated', () => {
+            // Если изменились другие настройки, перезагружаем всё
+            loadData();
+        });
+    </script>
+</body>
+</html>

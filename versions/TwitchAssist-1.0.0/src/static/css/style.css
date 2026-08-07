@@ -1,0 +1,822 @@
+/* ---- Базовые сбросы и тёмная тема ---- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+* {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+input, textarea, [contenteditable="true"] {
+    user-select: text;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+}
+
+*:focus {
+    outline: none;
+}
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+    outline: 2px solid #9147ff;
+    outline-offset: 2px;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #0e0e10;
+    color: #efeff1;
+    padding-top: 70px;
+    overflow: hidden;
+    height: 100%;
+}
+
+@media (max-width: 600px) {
+    body {
+        padding-top: 60px;
+    }
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #1f1f23;
+    border-radius: 8px;
+}
+::-webkit-scrollbar-thumb {
+    background: #9147ff;
+    border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #7a3bcc;
+}
+
+/* ---- Контейнер – теперь высота = 100vh - высота шапки ---- */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    height: calc(100vh - 70px);
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    min-height: 0;
+    overflow: hidden;
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 10px;
+        height: calc(100vh - 60px);
+    }
+}
+
+/* ---- Карточка – общий стиль ---- */
+.card {
+    background: #18181b;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+    border: 1px solid #2a2a2e;
+    transition: box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+.card:hover {
+    box-shadow: 0 6px 16px rgba(0,0,0,0.8);
+}
+
+.card-title {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 18px;
+    color: #adadb8;
+    letter-spacing: 0.3px;
+}
+
+/* ---- Шапка (фиксированная) ---- */
+.sticky-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: #18181b;
+    border-bottom: 2px solid #1f1f23;
+    padding: 0 20px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+}
+@media (max-width: 600px) {
+    .sticky-header {
+        height: 60px;
+        padding: 0 10px;
+    }
+}
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    flex-wrap: wrap;
+    width: 100%;
+}
+.header-container .logo {
+    margin-right: 20px;
+}
+.header-container .tabs {
+    display: flex;
+    flex-wrap: wrap;
+}
+.header-container .tabs .tab-btn {
+    margin-right: 5px;
+}
+.header-container .tabs .tab-btn:last-child {
+    margin-right: 0;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+.logo span {
+    color: #9147ff;
+}
+
+.tabs {
+    display: flex;
+    flex-wrap: wrap;
+}
+.tab-btn {
+    background: transparent;
+    border: none;
+    color: #adadb8;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    display: flex;
+    align-items: center;
+}
+.tab-btn i {
+    font-size: 18px;
+    margin-right: 8px;
+}
+.tab-btn:hover {
+    background: #2a2a2e;
+    color: #efeff1;
+}
+.tab-btn.active {
+    background: #2a2a2e;
+    color: #9147ff;
+}
+
+/* ---- Вкладки – теперь все растягиваются на 100% высоты ---- */
+.tab-content {
+    display: none;
+    flex: 1;
+    min-height: 0;
+    height: 100%;
+    overflow: hidden;
+}
+.tab-content.active {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+@keyframes fade {
+    from { opacity: 0.3; transform: translateY(5px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- Главная сетка ---- */
+.main-grid {
+    display: flex;
+    flex-wrap: wrap;
+    margin: -10px;
+    flex: 1;
+    min-height: 0;
+    height: 100%;
+    overflow: hidden;
+}
+.main-grid .column {
+    flex: 1 1 300px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    height: 100%;
+    overflow: hidden;
+}
+@media (max-width: 800px) {
+    .main-grid .column {
+        flex: 1 1 100%;
+        height: auto;
+        max-height: 50vh;
+        overflow: visible;
+    }
+    .main-grid .column:last-child {
+        max-height: none;
+        flex: 1;
+        overflow: hidden;
+    }
+}
+
+.column .card:not(:last-child) {
+    flex-shrink: 0;
+    margin-bottom: 16px;
+}
+.column .card:last-child {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* ---- Карточка канала ---- */
+.channel-grid {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    align-items: start;
+}
+.channel-grid .avatar-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-right: 20px;
+}
+.channel-grid .avatar-block img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #9147ff;
+    background: #1f1f23;
+    margin-bottom: 8px;
+}
+.channel-grid .avatar-block .status-block {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 500;
+}
+.channel-grid .avatar-block .status-block .status-dot {
+    margin-right: 6px;
+}
+.channel-grid .avatar-block .status-block .uptime {
+    margin-left: 6px;
+}
+.channel-grid .avatar-block .status-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #adadb8;
+}
+.channel-grid .avatar-block .status-dot.online {
+    background: #ff0000;
+    box-shadow: 0 0 8px #ff0000;
+}
+.channel-grid .avatar-block .status-dot.offline {
+    background: #adadb8;
+}
+.channel-grid .avatar-block .uptime {
+    color: #adadb8;
+    font-size: 13px;
+}
+
+.channel-info {
+    display: flex;
+    flex-direction: column;
+    margin-top: 4px;
+}
+.channel-info .info-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    margin-bottom: 8px;
+}
+.channel-info .info-row:last-child {
+    margin-bottom: 0;
+}
+.channel-info .info-label {
+    font-size: 12px;
+    color: #adadb8;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    min-width: 70px;
+    margin-right: 12px;
+}
+.channel-info .info-value {
+    font-size: 18px;
+    font-weight: 600;
+    word-break: break-word;
+}
+.channel-info .info-value.name {
+    font-size: 22px;
+    font-weight: 700;
+}
+.channel-info .info-value.game {
+    font-size: 18px;
+    font-weight: 400;
+    color: #adadb8;
+    margin-left: 12px;
+}
+.channel-info .info-value.title {
+    font-size: 16px;
+    font-weight: 400;
+    color: #efeff1;
+    width: 100%;
+}
+.channel-info .info-value.followers {
+    color: #ff6b6b;
+}
+.channel-info .info-value.viewers {
+    color: #9147ff;
+}
+.channel-info .info-value .diff {
+    font-size: 14px;
+    margin-left: 8px;
+}
+.channel-info .info-value .diff.positive { color: #00e5a0; }
+.channel-info .info-value .diff.negative { color: #ff6b6b; }
+.channel-info .info-value .diff.neutral { color: #adadb8; }
+
+@media (max-width: 600px) {
+    .channel-grid {
+        grid-template-columns: 1fr;
+        justify-items: center;
+    }
+    .channel-grid .avatar-block {
+        margin-right: 0;
+        margin-bottom: 12px;
+    }
+    .channel-info .info-row {
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 6px;
+    }
+    .channel-info .info-label {
+        min-width: auto;
+        margin-right: 0;
+        margin-bottom: 2px;
+    }
+    .channel-info .info-value.name {
+        font-size: 20px;
+    }
+    .channel-info .info-value.game {
+        font-size: 16px;
+        margin-left: 0;
+    }
+}
+
+/* ---- График на главной (адаптивный) ---- */
+.chart-card {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+}
+.chart-container {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+    height: auto;
+}
+#viewersChart {
+    width: 100% !important;
+    height: 100% !important;
+    display: block;
+}
+
+/* ---- Чат ---- */
+.chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+}
+.chat-header .card-title {
+    margin-bottom: 0;
+}
+.chat-header .btn-outline {
+    margin-left: 10px;
+}
+
+#chat-box {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 0;
+    overflow-y: auto;
+    background: #0e0e10;
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+    border: 1px solid #2a2a2e;
+}
+
+.chat-message {
+    display: flex;
+    align-items: baseline;
+    padding: 6px 0;
+    border-bottom: 1px solid #1f1f23;
+    margin-bottom: 4px;
+}
+.chat-message:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+.chat-message .chat-time {
+    font-size: 11px;
+    color: #5a5a66;
+    flex-shrink: 0;
+    margin-right: 10px;
+}
+.chat-message .chat-username {
+    font-weight: 600;
+    flex-shrink: 0;
+    margin-right: 10px;
+    cursor: context-menu;
+}
+.chat-message .chat-text {
+    word-break: break-word;
+    color: #efeff1;
+}
+.empty-chat {
+    color: #5a5a66;
+    text-align: center;
+    margin-top: 30px;
+    font-style: italic;
+}
+
+.emote {
+    display: inline-block;
+    vertical-align: middle;
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+}
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid #9147ff;
+    color: #9147ff;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    display: flex;
+    align-items: center;
+}
+.btn-outline i {
+    margin-right: 6px;
+}
+.btn-outline:hover {
+    background: #9147ff;
+    color: #fff;
+}
+
+/* ---- Настройки (обновлённые) ---- */
+.settings-main .settings-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #2a2a2e;
+    padding-bottom: 8px;
+}
+.settings-tab {
+    background: transparent;
+    border: none;
+    color: #adadb8;
+    padding: 8px 18px;
+    border-radius: 6px 6px 0 0;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    border-bottom: 2px solid transparent;
+}
+.settings-tab:hover {
+    background: #2a2a2e;
+    color: #efeff1;
+}
+.settings-tab.active {
+    color: #9147ff;
+    border-bottom-color: #9147ff;
+    background: transparent;
+}
+
+.settings-content {
+    flex: 1;
+}
+.settings-category {
+    display: none;
+}
+.settings-category.active {
+    display: block;
+}
+
+.setting-card {
+    background: #0e0e10;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    border: 1px solid #2a2a2e;
+}
+.setting-card h4 {
+    color: #adadb8;
+    font-weight: 400;
+    margin-bottom: 16px;
+    font-size: 16px;
+    letter-spacing: 0.3px;
+}
+.setting-card:last-child {
+    margin-bottom: 0;
+}
+
+.settings-group {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+.settings-group:last-child {
+    margin-bottom: 0;
+}
+.settings-group label {
+    font-size: 15px;
+    color: #adadb8;
+    min-width: auto;      /* или 60px, 80px — как вам удобно */
+    margin-right: 10px;   /* можно уменьшить */
+}
+.settings-group input,
+.settings-group select,
+.settings-group textarea {
+    background: #18181b;
+    border: 1px solid #3a3a42;
+    color: #efeff1;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 15px;
+    transition: border-color 0.2s;
+    font-family: inherit;
+    flex: 1;
+    min-width: 200px;
+    margin-right: 15px;
+}
+.settings-group input:focus,
+.settings-group select:focus,
+.settings-group textarea:focus {
+    outline: none;
+    border-color: #9147ff;
+}
+.settings-group textarea {
+    height: 80px;
+    resize: vertical;
+}
+.settings-group button {
+    background: #9147ff;
+    color: #fff;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.settings-group button:hover {
+    background: #7a3bcc;
+}
+
+.settings-status {
+    font-size: 14px;
+    color: #00e5a0;
+    margin-left: 8px;
+}
+.settings-status.error {
+    color: #ff6b6b;
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+}
+.checkbox-group input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: #9147ff;
+    flex: 0 0 auto;
+    margin-right: 10px;
+}
+
+.help-text {
+    color: #5a5a66;
+    font-size: 13px;
+    margin-left: 10px;
+}
+/* ---- ПЕРЕКЛЮЧАТЕЛЬ (размер 44x24) ---- */
+.toggle {
+    position: relative;
+    display: inline-block;
+    width: 44px;            /* ← 44px */
+    min-width: 44px;
+    max-width: 44px;
+    height: 24px;
+    min-height: 24px;
+    max-height: 24px;
+    flex-shrink: 0;
+}
+.toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    margin: 0;
+}
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #3a3a42;
+    border-radius: 30px;
+    transition: background 0.25s ease, box-shadow 0.25s ease;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.4);
+}
+.toggle-slider::before {
+    content: "";
+    position: absolute;
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background: #ffffff;
+    border-radius: 50%;
+    transition: transform 0.25s ease, background 0.25s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+.toggle input:checked + .toggle-slider {
+    background: #9147ff;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.2), 0 0 8px rgba(145, 71, 255, 0.4);
+}
+.toggle input:checked + .toggle-slider::before {
+    transform: translateX(20px);   /* ← 20px (44 - 18 - 6) */
+    background: #ffffff;
+}
+.toggle:hover .toggle-slider {
+    filter: brightness(1.1);
+}
+.toggle input:disabled + .toggle-slider {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.overlay-card {
+    background: #0e0e10;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    border: 1px solid #2a2a2e;
+}
+.overlay-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.overlay-name {
+    font-size: 18px;
+    font-weight: 500;
+}
+.overlay-desc {
+    color: #adadb8;
+    font-size: 14px;
+    margin-top: 6px;
+}
+.overlay-desc code {
+    background: #1f1f23;
+    padding: 2px 8px;
+    border-radius: 4px;
+    color: #9147ff;
+}
+.overlay-settings {
+    border-top: 1px solid #2a2a2e;
+    padding-top: 12px;
+    margin-top: 8px;
+}
+.overlay-settings .settings-group {
+    margin-bottom: 12px;
+}
+.overlay-settings .settings-group label {
+    min-width: 100px;
+}
+.btn-sm {
+    padding: 6px 14px;
+    font-size: 13px;
+}
+.btn-primary {
+    background: #9147ff;
+    color: #fff;
+    border: none;
+    padding: 10px 28px;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.btn-primary:hover {
+    background: #7a3bcc;
+}
+
+#contextMenu {
+    display: none;
+    position: fixed;
+    background: #18181b;
+    border: 1px solid #3a3a42;
+    border-radius: 8px;
+    padding: 6px 0;
+    min-width: 220px;
+    z-index: 1000;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+}
+.ctx-item {
+    padding: 8px 18px;
+    color: #efeff1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+.ctx-item i {
+    width: 18px;
+    text-align: center;
+    color: #adadb8;
+    margin-right: 10px;
+}
+.ctx-item:hover {
+    background: #2a2a2e;
+}
+.ctx-item:active {
+    background: #3a3a42;
+}
+
+.diff-positive {
+    color: #00e5a0;
+    font-weight: 600;
+}
+.diff-negative {
+    color: #ff6b6b;
+    font-weight: 600;
+}
+.diff-neutral {
+    color: #adadb8;
+    font-weight: 400;
+}
+
+.charts-grid {
+    display: flex;
+    flex-wrap: wrap;
+    margin: -10px;
+    height: 100%;
+    min-height: 0;
+}
+.charts-grid .card {
+    flex: 1 1 300px;
+    margin: 10px;
+    min-height: 300px;
+}
+.chart-container-full {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+}
+.chart-container-full canvas {
+    width: 100% !important;
+    height: 100% !important;
+}

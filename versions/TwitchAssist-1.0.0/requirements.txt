@@ -1,0 +1,11 @@
+pyttsx3
+edge-tts
+pygame
+qrcode[pil]
+pillow
+PyQt5
+PyQtWebEngine
+playsound==1.2.2
+flask
+flask-SocketIO
+flask_cors

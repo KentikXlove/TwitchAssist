@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TwitchAssist Launcher</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            outline: none !important;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+            height: 100vh;
+            max-height: 950px;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 14px;
+            border-bottom: 1px solid #2a2a2a;
+            flex-shrink: 0;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        .logo i {
+            font-size: 28px;
+            color: #7c6cf0;
+            margin-right: 12px;
+        }
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+            margin-right: 10px;
+        }
+        .logo span {
+            font-size: 13px;
+            font-weight: 600;
+            color: #888;
+            background: #1e1e1e;
+            padding: 2px 14px;
+            border-radius: 30px;
+            border: 1px solid #333;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        #status-badge {
+            display: flex;
+            align-items: center;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 600;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: #ccc;
+        }
+        #status-badge i {
+            font-size: 10px;
+            margin-right: 8px;
+        }
+        .status-ready i { color: #4caf50; }
+        .status-download i { color: #fbbf24; animation: spin 1.2s linear infinite; }
+        .status-running i { color: #7c6cf0; }
+        .status-error i { color: #ef5350; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            margin: 12px 0 12px 0;
+            flex-shrink: 0;
+        }
+        .tab-btn {
+            background: transparent;
+            border: none;
+            padding: 8px 20px;
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 15px;
+            color: #888;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: 0.2s ease;
+            margin-right: 4px;
+        }
+        .tab-btn i {
+            margin-right: 8px;
+        }
+        .tab-btn:hover {
+            color: #fff;
+            background: #1e1e1e;
+        }
+        .tab-btn.active {
+            background: #7c6cf0;
+            color: #fff;
+        }
+
+        /* Main layout */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+        .tab-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .row {
+            display: flex;
+            flex: 1;
+            min-height: 0;
+            gap: 16px;
+        }
+        .col {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+        .col:first-child {
+            flex: 1.5;
+        }
+        .col:last-child {
+            flex: 1;
+        }
+
+        .panel {
+            background: #161616;
+            border: 1px solid #2a2a2a;
+            border-radius: 16px;
+            padding: 16px 18px;
+            display: flex;
+            flex-direction: column;
+            transition: 0.2s ease;
+        }
+        .panel:hover {
+            border-color: #3a3a3a;
+        }
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-shrink: 0;
+        }
+        .panel-header h2 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #999;
+        }
+        .panel-header h2 i {
+            margin-right: 8px;
+            color: #7c6cf0;
+        }
+        .panel-header .count {
+            font-size: 13px;
+            font-weight: 600;
+            background: #1e1e1e;
+            padding: 0 14px;
+            border-radius: 30px;
+            color: #aaa;
+            border: 1px solid #333;
+        }
+
+        .version-list {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 4px;
+            display: flex;
+            flex-direction: column;
+        }
+        .version-list::-webkit-scrollbar {
+            width: 4px;
+        }
+        .version-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .version-list::-webkit-scrollbar-thumb {
+            background: #7c6cf0;
+            border-radius: 10px;
+        }
+
+        .version-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 14px;
+            background: #1a1a1a;
+            border-radius: 12px;
+            border-left: 3px solid transparent;
+            transition: 0.2s ease;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #ddd;
+            margin-bottom: 4px;
+        }
+        .version-item:last-child {
+            margin-bottom: 0;
+        }
+        .version-item:hover {
+            background: #222;
+            transform: translateX(4px);
+        }
+        .version-item.selected {
+            background: #1e1e30;
+            border-left-color: #7c6cf0;
+        }
+        .version-item .version-name {
+            display: flex;
+            align-items: center;
+        }
+        .version-item .version-name i {
+            margin-right: 10px;
+            color: #666;
+        }
+        .version-item .version-name .installed-icon {
+            color: #4caf50;
+            margin-left: 6px;
+        }
+        .version-item .tag {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 1px 12px;
+            border-radius: 30px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .tag.latest {
+            background: #7c6cf0;
+            color: #fff;
+        }
+        .tag.installed {
+            background: #4caf50;
+            color: #fff;
+        }
+        .tag.beta {
+            background: #fbbf24;
+            color: #000;
+        }
+
+        .buttons {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 10px;
+            margin-left: -4px;
+            margin-right: -4px;
+        }
+        .btn {
+            flex: 1;
+            min-width: 70px;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 10px;
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s ease;
+            background: #1e1e1e;
+            color: #ddd;
+            border: 1px solid #333;
+            margin: 4px;
+        }
+        .btn i {
+            margin-right: 6px;
+        }
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(124,108,240,0.2);
+        }
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        .btn-primary {
+            background: #7c6cf0;
+            border-color: #7c6cf0;
+            color: #fff;
+        }
+        .btn-primary:hover:not(:disabled) {
+            background: #6a5ad6;
+            border-color: #6a5ad6;
+        }
+        .btn-success {
+            background: #4caf50;
+            border-color: #4caf50;
+            color: #fff;
+        }
+        .btn-success:hover:not(:disabled) {
+            background: #43a047;
+            border-color: #43a047;
+        }
+        .btn-danger {
+            background: #ef5350;
+            border-color: #ef5350;
+            color: #fff;
+        }
+        .btn-danger:hover:not(:disabled) {
+            background: #d32f2f;
+            border-color: #d32f2f;
+        }
+
+        .progress-container {
+            display: none;
+            align-items: center;
+            background: #1a1a1a;
+            border-radius: 10px;
+            padding: 6px 14px;
+            border: 1px solid #333;
+            margin-top: 8px;
+        }
+        .progress-bar {
+            flex: 1;
+            height: 6px;
+            background: #2a2a2a;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-right: 14px;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: #7c6cf0;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        .progress-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: #aaa;
+            min-width: 40px;
+            text-align: right;
+        }
+
+        .news-content {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #aaa;
+            overflow-y: auto;
+            flex: 1;
+            padding-right: 4px;
+        }
+        .news-content b {
+            color: #fff;
+        }
+        .news-content .version-badge {
+            display: inline-block;
+            background: #7c6cf0;
+            color: #fff;
+            padding: 1px 16px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 700;
+            margin-right: 10px;
+        }
+        .news-content .meta-info {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 6px 0 12px 0;
+            font-size: 13px;
+            color: #888;
+        }
+        .news-content .meta-info span {
+            display: flex;
+            align-items: center;
+            margin-right: 16px;
+        }
+        .news-content .meta-info i {
+            margin-right: 4px;
+            width: 16px;
+        }
+        .news-content .changelog-list {
+            margin-top: 6px;
+            padding-left: 18px;
+        }
+        .news-content .changelog-list li {
+            margin-bottom: 2px;
+        }
+
+        /* Магазин */
+        .store-filters {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+            flex-shrink: 0;
+        }
+        .filter-btn {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: #888;
+            padding: 4px 16px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s ease;
+            margin-right: 6px;
+            margin-bottom: 4px;
+        }
+        .filter-btn:hover {
+            background: #222;
+            color: #fff;
+        }
+        .filter-btn.active {
+            background: #7c6cf0;
+            color: #fff;
+            border-color: #7c6cf0;
+        }
+        .store-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+            flex: 1;
+            overflow-y: auto;
+            padding: 4px 0;
+            align-content: start;
+        }
+        .store-item {
+            background: #161616;
+            border: 1px solid #2a2a2a;
+            border-radius: 14px;
+            overflow: hidden;
+            transition: 0.2s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .store-item:hover {
+            border-color: #7c6cf0;
+            transform: translateY(-3px);
+        }
+        .store-item img {
+            width: 100%;
+            height: 110px;
+            object-fit: cover;
+            background: #0a0a0a;
+        }
+        .store-item .info {
+            padding: 12px 14px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .store-item .info h4 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 2px;
+        }
+        .store-item .info .meta {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 10px;
+        }
+        .store-item .info .btn {
+            width: 100%;
+            margin-top: auto;
+            font-size: 13px;
+            padding: 8px;
+        }
+        .store-item .info .btn.btn-danger {
+            background: #ef5350;
+            border-color: #ef5350;
+            color: #fff;
+        }
+        .store-item .info .btn.btn-danger:hover:not(:disabled) {
+            background: #d32f2f;
+            border-color: #d32f2f;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid #2a2a2a;
+            padding-top: 12px;
+            margin-top: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 13px;
+            color: #888;
+            flex-shrink: 0;
+            height: 36px;
+        }
+        footer .bottom-progress {
+            display: none;
+            align-items: center;
+            width: 100%;
+            max-width: 400px;
+        }
+        footer .bottom-progress .bar {
+            flex: 1;
+            height: 4px;
+            background: #2a2a2a;
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 0 12px;
+        }
+        footer .bottom-progress .bar .fill {
+            height: 100%;
+            background: #7c6cf0;
+            border-radius: 6px;
+            transition: width 0.3s;
+        }
+        footer .bottom-progress .label {
+            min-width: 60px;
+            text-align: center;
+            color: #aaa;
+        }
+        footer .bottom-text {
+            text-align: center;
+            display: flex;
+        }
+        footer .bottom-text span {
+            margin: 0 12px;
+        }
+        footer .bottom-text i {
+            margin-right: 4px;
+        }
+
+        @media (max-width: 820px) {
+            body {
+                padding: 12px;
+                height: auto;
+                max-height: none;
+            }
+            .row {
+                flex-direction: column;
+                gap: 12px;
+            }
+            .col:first-child {
+                flex: 1;
+            }
+            .col:last-child {
+                flex: 1;
+            }
+            .store-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            }
+            .btn {
+                min-width: 60px;
+                font-size: 12px;
+                padding: 6px 10px;
+            }
+            .logo h1 {
+                font-size: 20px;
+            }
+            .header-right {
+                gap: 8px;
+            }
+        }
+        @media (max-width: 500px) {
+            .store-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .buttons .btn {
+                min-width: 50px;
+                font-size: 11px;
+            }
+            .tab-btn {
+                font-size: 13px;
+                padding: 6px 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header (без кнопки папки) -->
+    <header>
+        <div class="logo">
+            <i class="fas fa-crown"></i>
+            <h1>TwitchAssist</h1>
+            <span>Launcher</span>
+        </div>
+        <div class="header-right">
+            <div id="status-badge" class="status-ready">
+                <i class="fas fa-circle"></i> Готово
+            </div>
+        </div>
+    </header>
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="main"><i class="fas fa-home"></i> Главная</button>
+        <button class="tab-btn" data-tab="store"><i class="fas fa-store"></i> Магазин</button>
+    </div>
+
+    <main>
+        <!-- Главная -->
+        <div class="tab-content" id="tab-main" style="display:flex;">
+            <div class="row">
+                <div class="col">
+                    <div class="panel" style="flex:1;">
+                        <div class="panel-header">
+                            <h2><i class="fas fa-code-branch"></i>Версии</h2>
+                            <span class="count" id="version-count">0</span>
+                        </div>
+                        <div class="version-list" id="version-list"></div>
+                        <div class="buttons">
+                            <button class="btn btn-primary" id="install-btn" disabled><i class="fas fa-download"></i> Установить</button>
+                            <button class="btn btn-success" id="start-btn" disabled><i class="fas fa-play"></i> Запуск</button>
+                            <button class="btn btn-danger" id="uninstall-btn" disabled><i class="fas fa-trash"></i> Удалить</button>
+                        </div>
+                        <div class="progress-container" id="progress-container">
+                            <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+                            <span class="progress-text" id="progress-text">0%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="panel" style="flex:1;">
+                        <div class="panel-header">
+                            <h2><i class="fas fa-info-circle"></i>Подробности</h2>
+                        </div>
+                        <div class="news-content" id="version-details">
+                            <div style="color:#666;">Выберите версию</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Магазин -->
+        <div class="tab-content" id="tab-store" style="display:none;">
+            <div class="panel" style="flex:1;">
+                <div class="panel-header">
+                    <h2><i class="fas fa-gem"></i>Дополнения</h2>
+                    <span class="count" id="store-count">0</span>
+                </div>
+                <div class="store-filters" id="store-filters">
+                    <button class="filter-btn active" data-filter="all">Все</button>
+                </div>
+                <div class="store-grid" id="store-grid">
+                    <div style="padding:20px;color:#666;text-align:center;">Загрузка...</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="bottom-progress" id="bottom-progress">
+            <span class="label" id="bottom-label">Загрузка...</span>
+            <div class="bar"><div class="fill" id="bottom-fill" style="width:0%;"></div></div>
+            <span class="label" id="bottom-percent">0%</span>
+        </div>
+        <div class="bottom-text" id="bottom-text">
+            <span><i class="fas fa-circle" style="color:#7c6cf0;font-size:8px;"></i> Статус: <span id="status-bar">Готов к работе</span></span>
+            <span><i class="fas fa-code"></i> v3.0</span>
+        </div>
+    </footer>
+
+    <script>
+        // ---------- Форматирование размера ----------
+        function formatSize(bytes) {
+            if (bytes === 0 || bytes === undefined || bytes === null) return '0 B';
+            const units = ['B', 'KB', 'MB', 'GB'];
+            let value = bytes;
+            let unitIndex = 0;
+            while (value >= 1024 && unitIndex < units.length - 1) {
+                value /= 1024;
+                unitIndex++;
+            }
+            if (Number.isInteger(value)) {
+                return value + ' ' + units[unitIndex];
+            } else {
+                return value.toFixed(1) + ' ' + units[unitIndex];
+            }
+        }
+
+        let selectedVersion = null;
+        let versionsData = null;
+        let installedVersions = [];
+        let currentDetails = {};
+        let storeItems = [];
+        let currentFilter = 'all';
+        let downloads = [];
+        let statusPollInterval = null;
+        let previousStatus = '';
+
+        async function apiFetch(endpoint, options = {}) {
+            const resp = await fetch(endpoint, options);
+            return await resp.json();
+        }
+
+        async function pollStatus() {
+            try {
+                const data = await apiFetch('/api/status');
+                const newStatus = data.status;
+                updateStatus(data.status_text, data.status);
+                if (data.progress > 0) {
+                    showProgress(true);
+                    updateProgress(data.progress);
+                } else {
+                    showProgress(false);
+                }
+                if (data.downloads) {
+                    downloads = data.downloads;
+                }
+                if (previousStatus === 'downloading' && newStatus === 'ready') {
+                    await refreshInstalled();
+                    const storeTab = document.getElementById('tab-store');
+                    if (storeTab.style.display !== 'none') {
+                        checkStoreInstallStatus();
+                    }
+                }
+                previousStatus = newStatus;
+                if (data.downloads && data.downloads.length > 0) {
+                    const active = data.downloads.find(d => d.status === 'active');
+                    if (active) {
+                        updateBottomProgress(active.name, active.progress);
+                    } else {
+                        updateBottomProgress('', 100);
+                    }
+                } else {
+                    updateBottomProgress('', 100);
+                }
+            } catch (e) {
+                console.error('Ошибка получения статуса', e);
+            }
+        }
+
+        async function loadVersions() {
+            try {
+                const data = await apiFetch('/api/versions');
+                versionsData = data;
+                await refreshInstalled();
+                renderVersions(versionsData);
+                if (versionsData && versionsData.versions && versionsData.versions.length) {
+                    const first = versionsData.versions[0];
+                    selectVersion(first.version);
+                }
+            } catch (e) {
+                console.error('Ошибка загрузки версий:', e);
+            }
+        }
+
+        async function refreshInstalled() {
+            try {
+                const data = await apiFetch('/api/installed');
+                installedVersions = data || [];
+                if (versionsData) {
+                    renderVersions(versionsData);
+                }
+                updateButtons();
+                if (selectedVersion && installedVersions.includes(selectedVersion)) {
+                    await loadVersionDetails(selectedVersion);
+                }
+            } catch (e) {
+                console.error('Ошибка получения установленных:', e);
+            }
+        }
+
+        function renderVersions(data) {
+            const list = document.getElementById('version-list');
+            list.innerHTML = '';
+            if (!data || !data.versions || !data.versions.length) {
+                list.innerHTML = '<div style="padding:16px;color:#666;text-align:center;">Нет доступных версий</div>';
+                document.getElementById('version-count').textContent = '0';
+                return;
+            }
+            const sorted = data.versions.slice().sort((a,b) => b.version.localeCompare(a.version, undefined, {numeric:true}));
+            document.getElementById('version-count').textContent = sorted.length;
+
+            sorted.forEach(v => {
+                const div = document.createElement('div');
+                div.className = 'version-item';
+                div.dataset.version = v.version;
+                const isLatest = v.version === data.latest?.version;
+                const isInstalled = installedVersions.includes(v.version);
+                const isBeta = v.is_beta || false;
+
+                let tagsHtml = '';
+                if (isLatest) tagsHtml += '<span class="tag latest">Последняя</span>';
+                if (isInstalled) tagsHtml += '<span class="tag installed">Установлена</span>';
+                if (isBeta) tagsHtml += '<span class="tag beta">Beta</span>';
+
+                div.innerHTML = `
+                    <span class="version-name">
+                        <i class="fas fa-tag"></i> Версия ${v.version}
+                        ${isInstalled ? '<i class="fas fa-check-circle installed-icon"></i>' : ''}
+                    </span>
+                    ${tagsHtml}
+                `;
+                if (isLatest) div.style.borderLeftColor = '#7c6cf0';
+                if (isInstalled) div.style.borderLeftColor = '#4caf50';
+                if (isBeta) div.style.borderLeftColor = '#fbbf24';
+
+                div.addEventListener('click', () => selectVersion(v.version));
+                list.appendChild(div);
+            });
+
+            if (selectedVersion) {
+                highlightVersion(selectedVersion);
+            } else {
+                const first = sorted[0];
+                if (first) selectVersion(first.version);
+            }
+            updateButtons();
+        }
+
+        function highlightVersion(ver) {
+            document.querySelectorAll('#version-list .version-item').forEach(el => {
+                el.classList.toggle('selected', el.dataset.version === ver);
+            });
+        }
+
+        async function selectVersion(ver) {
+            selectedVersion = ver;
+            highlightVersion(ver);
+            await loadVersionDetails(ver);
+            updateButtons();
+        }
+
+        async function loadVersionDetails(ver) {
+            try {
+                const data = await apiFetch(`/api/version_details/${ver}`);
+                currentDetails = data;
+                renderDetails(data);
+            } catch (e) {
+                console.error('Ошибка загрузки деталей:', e);
+            }
+        }
+
+        function renderDetails(details) {
+            const el = document.getElementById('version-details');
+            if (!details || !details.version) {
+                el.innerHTML = '<div style="color:#666;">Информация недоступна</div>';
+                return;
+            }
+            const isInstalled = installedVersions.includes(details.version);
+            const status = details.is_beta ? 'Beta' : (details.is_stable ? 'Стабильная' : 'Неизвестно');
+            const sizeFormatted = formatSize(details.size || 0);
+            const date = details.release_date || 'Неизвестно';
+            let changelogHtml = '';
+            if (details.changelog && details.changelog.length) {
+                changelogHtml = '<ul class="changelog-list">' +
+                    details.changelog.map(item => `<li>${item}</li>`).join('') +
+                    '</ul>';
+            } else {
+                changelogHtml = '<p style="color:#666;">Нет списка изменений</p>';
+            }
+
+            el.innerHTML = `
+                <div style="display:flex; align-items:center; flex-wrap:wrap;">
+                    <span class="version-badge" style="margin-right:8px;">v${details.version}</span>
+                    <span style="font-size:13px;color:#888; margin-right:8px;">${status}</span>
+                    ${isInstalled ? '<span class="tag installed" style="padding:1px 10px;">Установлена</span>' : ''}
+                </div>
+                <div class="meta-info">
+                    <span><i class="fas fa-calendar-alt"></i> ${date}</span>
+                    <span><i class="fas fa-hdd"></i> ${sizeFormatted}</span>
+                    <span><i class="fas fa-${details.is_beta ? 'flask' : 'check-circle'}"></i> ${status}</span>
+                </div>
+                <div style="margin-top:4px;">
+                    <b style="color:#fff;">Изменения:</b>
+                    ${changelogHtml}
+                </div>
+            `;
+        }
+
+        function updateButtons() {
+            const isInstalled = installedVersions.includes(selectedVersion);
+            const installBtn = document.getElementById('install-btn');
+            installBtn.innerHTML = isInstalled ? '<i class="fas fa-sync-alt"></i> Обновить' : '<i class="fas fa-download"></i> Установить';
+            installBtn.disabled = !selectedVersion;
+            document.getElementById('start-btn').disabled = !(selectedVersion && isInstalled);
+            document.getElementById('uninstall-btn').disabled = !(selectedVersion && isInstalled);
+        }
+
+        // ---------- Магазин ----------
+        async function loadStore() {
+            try {
+                const data = await apiFetch('/api/store');
+                storeItems = data || [];
+                document.getElementById('store-count').textContent = storeItems.length;
+                buildFilters(storeItems);
+                applyFilter(currentFilter);
+                await checkStoreInstallStatus();
+            } catch (e) {
+                console.error('Ошибка загрузки магазина:', e);
+                document.getElementById('store-grid').innerHTML = '<div style="padding:20px;color:#ef5350;text-align:center;">Ошибка загрузки магазина</div>';
+            }
+        }
+
+        async function checkStoreInstallStatus() {
+            if (!storeItems.length) return;
+            try {
+                const resp = await fetch('/api/store_installed', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ items: storeItems })
+                });
+                const statuses = await resp.json();
+                document.querySelectorAll('.store-item').forEach(card => {
+                    const name = card.dataset.name;
+                    const status = statuses.find(s => s.name === name);
+                    if (status) {
+                        const btn = card.querySelector('.store-install-btn');
+                        if (btn) {
+                            if (status.installed) {
+                                btn.textContent = ' Удалить';
+                                btn.className = 'btn btn-danger store-install-btn';
+                                btn.dataset.action = 'uninstall';
+                            } else {
+                                btn.textContent = ' Установить';
+                                btn.className = 'btn btn-primary store-install-btn';
+                                btn.dataset.action = 'install';
+                            }
+                        }
+                    }
+                });
+            } catch (e) {
+                console.error('Ошибка проверки статуса товаров:', e);
+            }
+        }
+
+        function buildFilters(items) {
+            const container = document.getElementById('store-filters');
+            const activeFilter = document.querySelector('.filter-btn.active')?.dataset.filter || 'all';
+            container.innerHTML = '';
+            const types = new Set();
+            items.forEach(item => { if (item.type) types.add(item.type); });
+            const typeList = ['all', ...Array.from(types)];
+            typeList.forEach(type => {
+                const btn = document.createElement('button');
+                btn.className = 'filter-btn' + (type === activeFilter ? ' active' : '');
+                btn.dataset.filter = type;
+                btn.textContent = type === 'all' ? 'Все' : type;
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentFilter = this.dataset.filter;
+                    applyFilter(currentFilter);
+                });
+                container.appendChild(btn);
+            });
+        }
+
+        function applyFilter(filter) {
+            const grid = document.getElementById('store-grid');
+            grid.innerHTML = '';
+            const filtered = filter === 'all' ? storeItems : storeItems.filter(item => item.type === filter);
+            if (!filtered.length) {
+                grid.innerHTML = '<div style="padding:20px;color:#666;text-align:center;">Нет товаров</div>';
+                return;
+            }
+            filtered.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'store-item';
+                div.dataset.name = item.name;
+                const sizeFormatted = formatSize(item.size_bytes || 0);
+                let typeIcon = 'fa-palette';
+                let typeLabel = 'Стиль';
+                if (item.type === 'Styles') {
+                    typeIcon = 'fa-paint-brush';
+                    typeLabel = 'Стиль';
+                } else if (item.type === 'Addons') {
+                    typeIcon = 'fa-puzzle-piece';
+                    typeLabel = 'Дополнение';
+                }
+                div.innerHTML = `
+                    <img src="${item.screenshot}" alt="${item.name}" loading="lazy" onerror="this.style.display='none'">
+                    <div class="info">
+                        <h4>${item.name}</h4>
+                        <div class="meta">
+                            <span><i class="fas ${typeIcon}"></i> ${typeLabel}</span>
+                            <span>${sizeFormatted}</span> • <span>${item.release_date}</span>
+                        </div>
+                        <button class="btn btn-primary store-install-btn"
+                                data-name="${item.name}"
+                                data-url="${item.download_url}"
+                                data-path="${item.install_path}"
+                                data-action="install">
+                            <i class="fas fa-download"></i> Установить
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(div);
+            });
+
+            checkStoreInstallStatus();
+
+            document.querySelectorAll('.store-install-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const name = this.dataset.name;
+                    const url = this.dataset.url;
+                    const path = this.dataset.path;
+                    const action = this.dataset.action;
+                    if (action === 'install') {
+                        installStoreItem(name, url, path);
+                    } else if (action === 'uninstall') {
+                        uninstallStoreItem(name, path);
+                    }
+                });
+            });
+        }
+
+        async function installStoreItem(name, download_url, install_path) {
+            try {
+                const resp = await fetch('/api/install_store', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({name, download_url, install_path})
+                });
+                const data = await resp.json();
+                if (data.error) {
+                    console.error('Ошибка установки товара:', data.error);
+                } else {
+                    // Запускаем периодическую проверку статуса
+                    const checkInterval = setInterval(async () => {
+                        await checkStoreInstallStatus();
+                        const stillDownloading = downloads.some(d => d.name === name && d.status === 'active');
+                        if (!stillDownloading) {
+                            clearInterval(checkInterval);
+                            await checkStoreInstallStatus();
+                        }
+                    }, 2000);
+                }
+            } catch (e) {
+                console.error('Ошибка установки товара:', e);
+            }
+        }
+
+        async function uninstallStoreItem(name, install_path) {
+            try {
+                const resp = await fetch('/api/uninstall_store', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({install_path})
+                });
+                const data = await resp.json();
+                if (data.error) {
+                    console.error('Ошибка удаления товара:', data.error);
+                } else {
+                    await checkStoreInstallStatus();
+                }
+            } catch (e) {
+                console.error('Ошибка удаления товара:', e);
+            }
+        }
+
+        // ---------- Общие функции ----------
+        function updateStatus(text, type) {
+            const badge = document.getElementById('status-badge');
+            badge.innerHTML = `<i class="fas fa-circle"></i> ${text}`;
+            badge.className = 'status-' + type;
+            document.getElementById('status-bar').textContent = text;
+        }
+
+        function showProgress(show) {
+            document.getElementById('progress-container').style.display = show ? 'flex' : 'none';
+        }
+
+        function updateProgress(percent) {
+            document.getElementById('progress-fill').style.width = percent + '%';
+            document.getElementById('progress-text').textContent = percent + '%';
+        }
+
+        function updateBottomProgress(name, progress) {
+            const container = document.getElementById('bottom-progress');
+            const text = document.getElementById('bottom-text');
+            if (name && progress >= 0 && progress < 100) {
+                container.style.display = 'flex';
+                text.style.display = 'none';
+                document.getElementById('bottom-label').textContent = name;
+                document.getElementById('bottom-fill').style.width = progress + '%';
+                document.getElementById('bottom-percent').textContent = progress + '%';
+            } else {
+                container.style.display = 'none';
+                text.style.display = 'block';
+            }
+        }
+
+        async function installVersion(version) {
+            try {
+                const resp = await fetch('/api/install_version', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({version})
+                });
+                const data = await resp.json();
+                if (data.error) {
+                    console.error('Ошибка установки версии:', data.error);
+                }
+            } catch (e) {
+                console.error('Ошибка установки версии:', e);
+            }
+        }
+
+        async function uninstallVersion(version) {
+            try {
+                const resp = await fetch('/api/uninstall_version', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({version})
+                });
+                const data = await resp.json();
+                if (data.error) {
+                    console.error('Ошибка удаления версии:', data.error);
+                } else {
+                    await refreshInstalled();
+                }
+            } catch (e) {
+                console.error('Ошибка удаления версии:', e);
+            }
+        }
+
+        async function startApp(version) {
+            try {
+                const resp = await fetch('/api/start_app', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({version})
+                });
+                const data = await resp.json();
+                if (data.error) {
+                    console.error('Ошибка запуска:', data.error);
+                }
+            } catch (e) {
+                console.error('Ошибка запуска:', e);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadVersions();
+            loadStore();
+
+            document.getElementById('install-btn').addEventListener('click', function() {
+                if (selectedVersion) installVersion(selectedVersion);
+            });
+            document.getElementById('start-btn').addEventListener('click', function() {
+                if (selectedVersion) startApp(selectedVersion);
+            });
+            document.getElementById('uninstall-btn').addEventListener('click', function() {
+                if (selectedVersion) uninstallVersion(selectedVersion);
+            });
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    const tab = this.dataset.tab;
+                    document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+                    document.getElementById('tab-' + tab).style.display = 'flex';
+                    if (tab === 'store') {
+                        checkStoreInstallStatus();
+                    }
+                });
+            });
+
+            statusPollInterval = setInterval(pollStatus, 1500);
+            pollStatus();
+        });
+    </script>
+</body>
+</html>

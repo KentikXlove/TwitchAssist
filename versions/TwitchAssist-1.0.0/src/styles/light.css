@@ -1,0 +1,161 @@
+/* Светлая тема для чат-оверлея */
+body {
+    background: transparent;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#messages {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 16px;
+    padding: 12px 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.chat-msg {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 12px;
+    padding: 8px 14px;
+    margin-bottom: 6px;
+    border-left: 3px solid #4a90e2;
+    transition: background 0.2s, transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.chat-msg:hover {
+    background: rgba(0, 0, 0, 0.06);
+    transform: scale(1.01);
+}
+
+.chat-avatar {
+    width: var(--avatar-size, 28px);
+    height: var(--avatar-size, 28px);
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.chat-badges {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.chat-badge {
+    height: 20px;
+    width: auto;
+    filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.1));
+}
+
+.chat-username {
+    font-weight: 700;
+    text-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+    margin-right: 2px;
+    letter-spacing: 0.3px;
+}
+
+.chat-time {
+    font-size: 10px;
+    color: rgba(0, 0, 0, 0.4);
+    margin-left: auto;
+    padding-left: 8px;
+    flex-shrink: 0;
+    transition: opacity 0.2s;
+}
+
+.chat-msg > span:not(.chat-username):not(.chat-time) {
+    color: #222;
+    word-break: break-word;
+}
+
+.chat-emote {
+    height: 1.6em;
+    vertical-align: middle;
+    filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.1));
+}
+
+/* Кастомизация скролла */
+#messages::-webkit-scrollbar {
+    width: 4px;
+    background: transparent;
+}
+#messages::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+}
+#messages {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+/* ===== СТИЛИ ДЛЯ .telegram-container (обновлённые) ===== */
+.telegram-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 24px;
+    padding: 28px 24px 24px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.10);
+    max-width: 280px;
+    margin: 0 auto;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.telegram-container:hover {
+    transform: scale(1.02);
+    box-shadow: 0 16px 56px rgba(74, 144, 226, 0.20);
+}
+
+.telegram-container h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a1a2e;
+    text-align: center;
+    margin: 0 0 16px 0;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 8px rgba(74, 144, 226, 0.15);
+}
+
+.telegram-container img {
+    width: 160px;
+    height: 160px;
+    border-radius: 12px;        /* чуть закруглённый */
+    border: 2px solid #4a90e2;
+    box-shadow: 0 0 24px rgba(74, 144, 226, 0.25);
+    object-fit: contain;
+    background: #fff;
+    padding: 6px;
+    margin-bottom: 14px;
+    transition: box-shadow 0.3s;
+}
+
+.telegram-container img:hover {
+    box-shadow: 0 0 36px rgba(74, 144, 226, 0.45);
+}
+
+.telegram-container .username {
+    font-size: 22px;            /* нормальный крупный размер */
+    font-weight: 700;
+    color: #1a1a2e;
+    text-align: center;
+    text-shadow: 0 0 12px rgba(74, 144, 226, 0.15);
+    letter-spacing: 0.8px;
+    background: rgba(74, 144, 226, 0.08);
+    padding: 6px 18px;
+    border-radius: 40px;
+    border: 1px solid rgba(74, 144, 226, 0.20);
+    backdrop-filter: blur(2px);
+}
