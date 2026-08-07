@@ -1,0 +1,9 @@
+[
+  {
+    "version": "1.0.0",
+    "latest": true,
+    "files": [
+      {"name": "launcher.exe", "id": "G9Jwc10CQR2GTQI6ppH3Fgt4OS", "autostart": false}
+    ]
+  }
+]
