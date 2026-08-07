@@ -1,0 +1,78 @@
+body {
+    background: #0e0e10;
+    color: #efeff1;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    margin: 0;
+    padding: 10px;
+}
+#chat-box {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.chat-message {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 4px 0;
+    border-bottom: 1px solid #1f1f23;
+}
+.chat-time {
+    font-size: 11px;
+    color: #5a5a66;
+    flex-shrink: 0;
+}
+.chat-username {
+    font-weight: 600;
+    flex-shrink: 0;
+}
+.chat-text {
+    word-break: break-word;
+}
+.emote {
+    display: inline-block;
+    vertical-align: middle;
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+}
+.avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* ---- Компактный телеграм-оверлей ---- */
+.telegram-container {
+    text-align: center;
+    background: #18181b;
+    padding: 15px 20px;
+    border-radius: 12px;
+    border: 1px solid #2a2a2e;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.6);
+    display: inline-block;
+    margin: 0 auto;
+}
+.telegram-container h2 {
+    margin: 0 0 6px 0;
+    font-size: 18px;
+    color: #9147ff;
+}
+.telegram-container .username {
+    color: #adadb8;
+    font-size: 15px;
+    margin-top: 4px;
+}
+.telegram-container img {
+    max-width: 200px;
+    height: auto;
+    border-radius: 8px;
+    margin: 8px 0;
+}
+.overlay-disabled {
+    font-size: 20px;
+    color: #adadb8;
+    text-align: center;
+    margin-top: 20px;
+}
