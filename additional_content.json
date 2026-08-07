@@ -6,7 +6,7 @@
       "screenshot": "https://raw.githubusercontent.com/KentikXlove/TwitchAssist/main/additional_content/styles/screenshot/dark.png",
       "download_url": "https://raw.githubusercontent.com/KentikXlove/TwitchAssist/main/additional_content/styles/dark.css",
       "install_path": "C:/TwitchAssist/styles/dark.css",
-      "size_bytes": 1048576,
+      "size_bytes": 3942.4,
       "release_date": "2026-08-01"
     },
     {
@@ -15,7 +15,7 @@
       "screenshot": "https://raw.githubusercontent.com/KentikXlove/TwitchAssist/main/additional_content/styles/screenshot/light.png",
       "download_url": "https://raw.githubusercontent.com/KentikXlove/TwitchAssist/main/additional_content/styles/light.css",
       "install_path": "C:/TwitchAssist/styles/light.css",
-      "size_bytes": 524288,
+      "size_bytes": 3880.96,
       "release_date": "2026-08-05"
     }
   ]
